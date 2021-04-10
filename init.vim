@@ -24,6 +24,7 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 
 Plug 'easymotion/vim-easymotion'
+Plug 'Raimondi/delimitMate'
 Plug 'airblade/vim-gitgutter'
 Plug 'bling/vim-airline'
 Plug 'preservim/nerdtree'
@@ -38,6 +39,7 @@ Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
 
 " tmux
 Plug 'christoomey/vim-tmux-navigator'
@@ -51,12 +53,16 @@ Plug 'mileszs/ack.vim'
 " colors
 Plug 'ntk148v/vim-horizon'
 Plug 'heraldofsolace/nisha-vim'
+Plug 'savq/melange'
+Plug 'vigoux/oak'
 
 call plug#end()
 
 " lsp
 lua << EOF
-require'lspconfig'.pyright.setup{}
+require'lspconfig'.pyls.setup{}
+require'lspconfig'.tsserver.setup{}
+require'lspconfig'.rust_analyzer.setup{}
 
 local nvim_lsp = require('lspconfig')
 local on_attach = function(client, bufnr)
@@ -71,7 +77,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<leader>g', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
   buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  -- buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
   buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
@@ -79,8 +85,8 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  buf_set_keymap('n', '<leader>k', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+  buf_set_keymap('n', '<leader>j', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   -- buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
 
   -- Set some keybinds conditional on server capabilities
@@ -107,7 +113,7 @@ end
 
 -- Use a loop to conveniently both setup defined servers 
 -- and map buffer local keybindings when the language server attaches
-local servers = { "pyright", "rust_analyzer", "tsserver" }
+local servers = { "pyls", "rust_analyzer", "tsserver" }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { on_attach = on_attach }
 end
@@ -278,9 +284,12 @@ nnoremap <silent> <leader>bp <Esc>obreakpoint()<Esc>
 autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 let g:pyindent_open_paren = 'shiftwidth()'
 
+" Hexokinase
+let g:Hexokinase_ftDisabled = ["rust"]
+
 " use a dark background
 set background=dark
 
 set termguicolors
-colorscheme horizon
+colorscheme melange
 let g:airline_theme = 'nisha'
